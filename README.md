@@ -4,7 +4,24 @@
 
 The **Vehicle Data Analyzer** is a menu-driven C++ application designed to manage and analyze vehicle inventory data. The project demonstrates effective use of **C++ STL**, **object-oriented programming**, and **clean modular design** to perform real-world data operations such as sorting, searching, filtering, and reporting.
 
+This system supports:
 
+* 🔐 Role-based login (Admin/User)
+* 🚘 Vehicle management (Add, Update, Delete)
+* 🔎 Search using Binary Search
+* 📊 Inventory analytics
+* 💾 File persistence (Data stored in text files)
+* 🏗 Multi-file architecture
+
+
+## 🛠 Technologies Used
+
+* C++
+* Object-Oriented Programming
+* STL (vector, map, algorithm, accumulate)
+* File Handling
+* Binary Search
+* Role-Based Access Control
 
 ## 🛠️ Tech Stack
 
@@ -13,7 +30,21 @@ The **Vehicle Data Analyzer** is a menu-driven C++ application designed to manag
 * **STL:** vector, map, algorithm, numeric
 * **Compiler:** GCC / MSVC / Any standard C++ compiler
 
+## 📂 Project Structure
 
+```
+VehicleSystem/
+│
+├── main.cpp
+├── Vehicle.h
+├── VehicleManager.h
+├── VehicleManager.cpp
+├── Auth.h
+├── Auth.cpp
+├── users.txt
+├── vehicles.txt
+└── README.md
+```
 ## ✨ Features
 
 * Add and manage vehicle records
@@ -22,7 +53,6 @@ The **Vehicle Data Analyzer** is a menu-driven C++ application designed to manag
 * Search vehicles by **ID**
 * Filter vehicles by **price range**
 * Generate analytical reports:
-
   * Total inventory value
   * Average vehicle price
   * Category-wise vehicle count
@@ -42,25 +72,66 @@ Each vehicle record contains:
 * Price
 * Category (SUV, Sedan, Truck, Electric, etc.)
 
----
+## 🔐 Authentication System
+
+### users.txt Format
+
+```
+username password role
+```
+
+Example:
+
+```
+admin admin123 admin
+ananya 1234 user
+```
+
+### Roles
+
+| Role  | Permissions               |
+| ----- | ------------------------- |
+| admin | Add, Delete, Update, View |
+| user  | View, Search, Analytics   |
+
+
+
+## 🚘 Vehicle Data Format
+
+### vehicles.txt Format
+
+```
+id make model year price category
+```
+
+Example:
+
+```
+1 Toyota Camry 2019 24000 Sedan
+2 Ford Mustang 2021 55000 Sports
+3 Tesla Model3 2022 48000 Electric
+```
+
 
 ## ▶️ How to Run
 
-1. Clone or download the project.
-2. Open the source file in any C++ IDE or editor.
-3. Compile the program:
+### Step 1: Open Terminal in Project Folder
 
-   ```bash
-   g++ vehicle_data_analyzer.cpp -o analyzer
-   ```
-4. Run the executable:
+```bash
+cd VehicleSystem
+```
 
-   ```bash
-   ./analyzer
-   ```
+### Step 2: Compile
 
----
+```bash
+g++ main.cpp VehicleManager.cpp Auth.cpp -o vehicle
+```
 
+### Step 3: Run (PowerShell)
+
+```bash
+.\vehicle
+```
 ## 📋 Menu Options
 
 1. Add Vehicle
@@ -72,23 +143,18 @@ Each vehicle record contains:
 7. Generate Analysis Report
 8. Exit
 
-
-
 ## 📊 Sample Analysis Output
 
 * Total Inventory Value
 * Average Vehicle Price
 * Category-wise Vehicle Distribution
 
-
-
-
-
-
-
-
-
 ## 👩‍💻 Author
 
 **Ananya Goel**
+
+
+
+
+
 
