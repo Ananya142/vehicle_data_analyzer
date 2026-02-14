@@ -1,0 +1,5 @@
+1 Toyota Camry 2019 24000 Sedan
+2 Ford Mustang 2021 55000 Sports
+3 Tesla Model3 2022 48000 Electric
+4 Honda CRV 2020 30000 SUV
+5 Ford F150 2018 35000 Truck
