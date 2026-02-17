@@ -2,108 +2,231 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <iomanip>
 #include <numeric>
 #include <map>
+#include <iomanip>
 
-using namespace std;
+// Constructor
+VehicleManager::VehicleManager(const std::string& file)
+    : filename(file), nextId(1) {
+    loadFromFile();
+}
 
-void VehicleManager::load() {
-    ifstream file("vehicles.txt");
+// Load data
+void VehicleManager::loadFromFile() {
+    std::ifstream file(filename);
     if (!file) return;
 
-    Vehicle v;
-    while (file >> v.id >> v.make >> v.model >> v.year >> v.price >> v.category) {
-        inventory.push_back(v);
-        nextId = max(nextId, v.id + 1);
+    inventory.clear();
+
+    int id, year;
+    double price;
+    std::string make, model, category;
+
+    while (file >> id >> make >> model >> year >> price >> category) {
+        inventory.emplace_back(id, make, model, year, price, category);
+        nextId = std::max(nextId, id + 1);
     }
 }
 
-void VehicleManager::save() {
-    ofstream file("vehicles.txt");
-    for (auto& v : inventory)
-        file << v.id << " " << v.make << " " << v.model << " "
-             << v.year << " " << v.price << " " << v.category << "\n";
+// Save data
+void VehicleManager::saveToFile() const {
+    std::ofstream file(filename);
+
+    for (const auto& v : inventory) {
+        file << v.id << " "
+             << v.make << " "
+             << v.model << " "
+             << v.year << " "
+             << v.price << " "
+             << v.category << "\n";
+    }
 }
 
+// Print header
+void VehicleManager::printHeader() const {
+    std::cout << "\n"
+              << std::left
+              << std::setw(5)  << "ID"
+              << std::setw(15) << "Make"
+              << std::setw(15) << "Model"
+              << std::setw(8)  << "Year"
+              << std::setw(10) << "Price"
+              << std::setw(10) << "Category"
+              << "\n"
+              << std::string(65, '-') << "\n";
+}
+
+// Add vehicle
 void VehicleManager::addVehicle() {
-    Vehicle v;
-    v.id = nextId++;
+    std::string make, model, category;
+    int year;
+    double price;
 
-    cout << "Make: "; cin >> v.make;
-    cout << "Model: "; cin >> v.model;
-    cout << "Year: "; cin >> v.year;
-    cout << "Price: "; cin >> v.price;
-    cout << "Category: "; cin >> v.category;
+    std::cout << "Enter Make: ";
+    std::cin >> make;
 
-    inventory.push_back(v);
-    cout << "Vehicle Added!\n";
+    std::cout << "Enter Model: ";
+    std::cin >> model;
+
+    std::cout << "Enter Year: ";
+    std::cin >> year;
+
+    std::cout << "Enter Price: ";
+    std::cin >> price;
+
+    std::cout << "Enter Category: ";
+    std::cin >> category;
+
+    if (year <= 0 || price < 0) {
+        std::cout << "Invalid input.\n";
+        return;
+    }
+
+    inventory.emplace_back(nextId++, make, model, year, price, category);
+    saveToFile();
+
+    std::cout << "Vehicle added successfully.\n";
 }
 
-void VehicleManager::displayAll() {
-    cout << "\nID   Make    Model    Year   Price   Category\n";
-    cout << "-----------------------------------------------\n";
-    for (auto& v : inventory)
-        cout << v.id << "   " << v.make << "   " << v.model << "   "
-             << v.year << "   " << v.price << "   " << v.category << endl;
-}
+// Update vehicle
+void VehicleManager::updateVehicle() {
+    int id;
+    std::cout << "Enter Vehicle ID to update: ";
+    std::cin >> id;
 
-void VehicleManager::deleteVehicle(int id) {
-    inventory.erase(remove_if(inventory.begin(), inventory.end(),
-                    [id](Vehicle& v){ return v.id == id; }),
-                    inventory.end());
-}
-
-void VehicleManager::updateVehicle(int id) {
     for (auto& v : inventory) {
         if (v.id == id) {
-            cout << "New Price: ";
-            cin >> v.price;
+            std::cout << "Enter New Make: ";
+            std::cin >> v.make;
+
+            std::cout << "Enter New Model: ";
+            std::cin >> v.model;
+
+            std::cout << "Enter New Year: ";
+            std::cin >> v.year;
+
+            std::cout << "Enter New Price: ";
+            std::cin >> v.price;
+
+            std::cout << "Enter New Category: ";
+            std::cin >> v.category;
+
+            saveToFile();
+            std::cout << "Vehicle updated successfully.\n";
             return;
         }
     }
+
+    std::cout << "Vehicle not found.\n";
 }
 
-void VehicleManager::sortByPrice() {
-    sort(inventory.begin(), inventory.end(),
-         [](Vehicle& a, Vehicle& b) {
-             return a.price < b.price;
-         });
+// Delete vehicle
+void VehicleManager::deleteVehicle() {
+    int id;
+    std::cout << "Enter Vehicle ID to delete: ";
+    std::cin >> id;
+
+    auto originalSize = inventory.size();
+
+    inventory.erase(
+        std::remove_if(inventory.begin(), inventory.end(),
+            [id](const Vehicle& v) {
+                return v.id == id;
+            }),
+        inventory.end()
+    );
+
+    if (inventory.size() < originalSize) {
+        saveToFile();
+        std::cout << "Vehicle deleted successfully.\n";
+    } else {
+        std::cout << "Vehicle not found.\n";
+    }
 }
 
-void VehicleManager::searchById(int id) {
-    sort(inventory.begin(), inventory.end(),
-         [](Vehicle& a, Vehicle& b) {
-             return a.id < b.id;
-         });
+// Sort by ID
+void VehicleManager::sortById() {
+    std::sort(inventory.begin(), inventory.end(),
+        [](const Vehicle& a, const Vehicle& b) {
+            return a.id < b.id;
+        });
+}
+
+// Binary search
+void VehicleManager::searchByIdBinary() {
+    if (inventory.empty()) {
+        std::cout << "Inventory empty.\n";
+        return;
+    }
+
+    int id;
+    std::cout << "Enter Vehicle ID to search: ";
+    std::cin >> id;
+
+    sortById();
 
     int left = 0, right = inventory.size() - 1;
 
     while (left <= right) {
         int mid = (left + right) / 2;
+
         if (inventory[mid].id == id) {
-            cout << "Found: " << inventory[mid].make << endl;
+            printHeader();
+            inventory[mid].display();
             return;
         }
-        if (inventory[mid].id < id)
+        else if (inventory[mid].id < id)
             left = mid + 1;
         else
             right = mid - 1;
     }
 
-    cout << "Not Found\n";
+    std::cout << "Vehicle not found.\n";
 }
 
-void VehicleManager::analytics() {
-    double total = accumulate(inventory.begin(), inventory.end(), 0.0,
-        [](double sum, Vehicle& v){ return sum + v.price; });
+// Display all
+void VehicleManager::displayAll() const {
+    if (inventory.empty()) {
+        std::cout << "Inventory empty.\n";
+        return;
+    }
 
-    cout << "Total Inventory Value: " << total << endl;
+    printHeader();
+    for (const auto& v : inventory)
+        v.display();
 
-    map<string,int> count;
-    for (auto& v : inventory)
-        count[v.category]++;
+    std::cout << "\nTotal Vehicles: " << inventory.size() << "\n";
+}
 
-    for (auto& p : count)
-        cout << p.first << ": " << p.second << endl;
+// Generate report
+void VehicleManager::generateReport() const {
+    if (inventory.empty()) {
+        std::cout << "No vehicles available.\n";
+        return;
+    }
+
+    std::map<std::string, int> categoryCount;
+
+    double totalValue = std::accumulate(
+        inventory.begin(),
+        inventory.end(),
+        0.0,
+        [](double sum, const Vehicle& v) {
+            return sum + v.price;
+        });
+
+    for (const auto& v : inventory)
+        categoryCount[v.category]++;
+
+    std::cout << "\n--- Inventory Analysis ---\n";
+    std::cout << "Total Vehicles: " << inventory.size() << "\n";
+    std::cout << "Total Inventory Value: $" << totalValue << "\n";
+    std::cout << "Average Price: $" << totalValue / inventory.size() << "\n";
+
+    std::cout << "\nCategory Distribution:\n";
+    for (const auto& pair : categoryCount)
+        std::cout << pair.first << " : " << pair.second << "\n";
+
+    std::cout << "----------------------------\n";
 }

@@ -1,24 +1,30 @@
-#ifndef VEHICLEMANAGER_H
-#define VEHICLEMANAGER_H
+#ifndef VEHICLE_MANAGER_H
+#define VEHICLE_MANAGER_H
 
 #include "Vehicle.h"
 #include <vector>
+#include <string>
 
 class VehicleManager {
 private:
     std::vector<Vehicle> inventory;
-    int nextId = 1;
+    std::string filename;
+    int nextId;
+
+    void loadFromFile();
+    void saveToFile() const;
+    void sortById();
+    void printHeader() const;
 
 public:
-    void load();
-    void save();
+    VehicleManager(const std::string& file);
+
     void addVehicle();
-    void displayAll();
-    void deleteVehicle(int id);
-    void updateVehicle(int id);
-    void sortByPrice();
-    void searchById(int id);
-    void analytics();
+    void updateVehicle();
+    void deleteVehicle();
+    void displayAll() const;
+    void searchByIdBinary();
+    void generateReport() const;
 };
 
 #endif

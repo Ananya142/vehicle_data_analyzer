@@ -1,39 +1,24 @@
 #include "Auth.h"
 #include <iostream>
-#include <fstream>
 
-using namespace std;
+bool Auth::login(std::string &role) {
+    std::string username, password;
 
-bool Auth::login(string& role) {
-    string username, password;
-    cout << "Username: ";
-    cin >> username;
-    cout << "Password: ";
-    cin >> password;
+    std::cout << "Username: ";
+    std::cin >> username;
 
-    ifstream file("users.txt");
-    string u, p, r;
+    std::cout << "Password: ";
+    std::cin >> password;
 
-    while (file >> u >> p >> r) {
-        if (u == username && p == password) {
-            role = r;
-            return true;
-        }
+    if (username == "admin" && password == "admin123") {
+        role = "admin";
+        return true;
     }
+
+    if (username == "user" && password == "user123") {
+        role = "user";
+        return true;
+    }
+
     return false;
-}
-
-void Auth::registerUser() {
-    ofstream file("users.txt", ios::app);
-    string username, password, role;
-
-    cout << "New Username: ";
-    cin >> username;
-    cout << "Password: ";
-    cin >> password;
-    cout << "Role (admin/user): ";
-    cin >> role;
-
-    file << username << " " << password << " " << role << "\n";
-    cout << "User Registered Successfully!\n";
 }

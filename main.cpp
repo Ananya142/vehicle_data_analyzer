@@ -1,60 +1,54 @@
-#include "VehicleManager.h"
-#include "Auth.h"
 #include <iostream>
+#include "Auth.h"
+#include "VehicleManager.h"
 
-using namespace std;
+void showMenu() {
+    std::cout << "\n=== Vehicle Inventory System ===\n";
+    std::cout << "1. Add Vehicle\n";
+    std::cout << "2. Update Vehicle (Admin)\n";
+    std::cout << "3. Delete Vehicle (Admin)\n";
+    std::cout << "4. Display All\n";
+    std::cout << "5. Search by ID (Binary Search)\n";
+    std::cout << "6. Generate Report\n";
+    std::cout << "7. Exit\n";
+    std::cout << "Choice: ";
+}
 
 int main() {
     Auth auth;
-    string role;
+    VehicleManager manager("vehicles.txt");
 
-    cout << "1. Login\n2. Register\nChoice: ";
-    int choice;
-    cin >> choice;
-
-    if (choice == 2)
-        auth.registerUser();
-
+    std::string role;
     if (!auth.login(role)) {
-        cout << "Login Failed!\n";
+        std::cout << "Invalid login.\n";
         return 0;
     }
 
-    VehicleManager manager;
-    manager.load();
+    std::cout << "Logged in as: " << role << "\n";
 
-    int option;
+    int choice;
     do {
-        cout << "\n===== Vehicle System =====\n";
-        cout << "1. Add\n2. Display\n3. Delete\n4. Update\n5. Sort\n6. Search\n7. Analytics\n8. Exit\n";
-        cin >> option;
+        showMenu();
+        std::cin >> choice;
 
-        if (role != "admin" && option <= 4) {
-            cout << "Only Admin Allowed!\n";
-            continue;
-        }
-
-        switch(option) {
+        switch (choice) {
             case 1: manager.addVehicle(); break;
-            case 2: manager.displayAll(); break;
-            case 3: {
-                int id; cin >> id;
-                manager.deleteVehicle(id); break;
-            }
-            case 4: {
-                int id; cin >> id;
-                manager.updateVehicle(id); break;
-            }
-            case 5: manager.sortByPrice(); break;
-            case 6: {
-                int id; cin >> id;
-                manager.searchById(id); break;
-            }
-            case 7: manager.analytics(); break;
-            case 8: manager.save(); break;
+            case 2:
+                if (role == "admin") manager.updateVehicle();
+                else std::cout << "Admin only feature.\n";
+                break;
+            case 3:
+                if (role == "admin") manager.deleteVehicle();
+                else std::cout << "Admin only feature.\n";
+                break;
+            case 4: manager.displayAll(); break;
+            case 5: manager.searchByIdBinary(); break;
+            case 6: manager.generateReport(); break;
+            case 7: std::cout << "Goodbye!\n"; break;
+            default: std::cout << "Invalid choice.\n";
         }
 
-    } while(option != 8);
+    } while (choice != 7);
 
     return 0;
 }
